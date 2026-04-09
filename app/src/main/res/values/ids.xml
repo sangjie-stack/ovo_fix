@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="OnO_settingEntryItem" type="id" />
+    <item name="root" type="id" />
+    <item name="main_activity_menuItem_toggleDesktopIcon" type="id" />
+    <item type="id" name="item_save_to_panel" />
+    <item type="id" name="item_check" />
+    <item type="id" name="item_pull_msg" />
+    <item name="ivTitleName" type="id"/>
+    <item name="item_modify_text_message" type="id" />
+    <item name="item_respond_face" type="id" />
+    <item name="item_message_encryptor" type="id" />
+    <item name="item_protocol_recall" type="id" />
+</resources>

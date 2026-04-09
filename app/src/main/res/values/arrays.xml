@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="xposedscope">
+        <item>com.tencent.mobileqq</item>
+    </string-array>
+
+    <string-array name="hook_priority">
+        <item>高优先级</item>
+        <item>默认</item>
+        <item>低优先级</item>
+    </string-array>
+
+    <string-array name="hook_priority_values">
+        <item>10000</item>
+        <item>50</item>
+        <item>-10000</item>
+    </string-array>
+</resources>
