@@ -36,7 +36,8 @@ public class SessionUtils {
     }
 
     public static Serializable AIOParam2ContactRaw(Object AIOParam) {
-        return Objects.requireNonNull(AIOParam2Contact(AIOParam)).toKernelObject();
+        ContactCompat contact = AIOParam2Contact(AIOParam);
+        return contact == null ? null : contact.toKernelObject();
     }
 
     public static String getCurrentPeerIDByAIOContact(Object AIOContact) throws Exception {

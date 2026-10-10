@@ -50,6 +50,7 @@ class ModifyTextMessage : BaseSwitchFunctionHookItem(), OnMenuBuilder {
         if (!ConfigManager.getDefaultConfig().getBooleanOrFalse(Constants.PrekXXX + getItem(this::class.java).path)) return
 
         val contentView = QQMsgViewAdapter.getContentView(msgItemView)
+            ?: return
 
         val peerUid: String = FieldUtils.create(msgRecord)
             .fieldName("peerUid")
@@ -115,7 +116,10 @@ class ModifyTextMessage : BaseSwitchFunctionHookItem(), OnMenuBuilder {
                             it
                         )
                     }?.getMsgsByMsgId(
-                        Session.getContact(),
+                        Session.getContact() ?: run {
+                            Toasts.error(ContextUtils.getCurrentActivity(), "当前会话未就绪")
+                            return@createItemIconNt Unit
+                        },
                         msgIDs
                     ) { _, _, msgList ->
                         SyncUtils.runOnUiThread {

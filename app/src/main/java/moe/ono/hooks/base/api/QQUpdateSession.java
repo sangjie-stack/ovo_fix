@@ -2,23 +2,19 @@ package moe.ono.hooks.base.api;
 
 import static moe.ono.constants.Constants.MethodCacheKey_AIOParam;
 import static moe.ono.hooks._core.factory.HookItemFactory.getItem;
-import static moe.ono.hooks.message.SessionUtils.getCurrentChatTypeByAIOContact;
-import static moe.ono.hooks.message.SessionUtils.getCurrentPeerIDByAIOContact;
+import static moe.ono.hooks.message.SessionUtils.AIOParam2Contact;
 
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.github.kyuubiran.ezxhelper.utils.Log;
-
+import moe.ono.bridge.kernelcompat.ContactCompat;
 import moe.ono.config.ONOConf;
 import moe.ono.dexkit.TargetManager;
 import moe.ono.hooks._base.ApiHookItem;
 import moe.ono.hooks._core.annotation.HookItem;
 import moe.ono.hooks.item.chat.ChatScrollMemory;
 import moe.ono.hooks.item.chat.QQBubbleRedirect;
-import moe.ono.reflex.XField;
-import moe.ono.util.Initiator;
 import moe.ono.util.Logger;
 import moe.ono.util.Session;
 
@@ -29,14 +25,30 @@ public class QQUpdateSession extends ApiHookItem {
         hookBefore(TargetManager.requireMethod(MethodCacheKey_AIOParam), param -> {
             Logger.d("on QQUpdateSession");
 
+            if (param.args == null || param.args.length == 0) {
+                Logger.w("QQUpdateSession", "skip: args is empty");
+                return;
+            }
+
+            if (!(param.args[0] instanceof Bundle)) {
+                Logger.w("QQUpdateSession", "skip: arg0 is not Bundle");
+                return;
+            }
+
             Bundle bundle = (Bundle) param.args[0];
             Object cAIOParam = bundle.getParcelable("aio_param");
+            if (cAIOParam == null) {
+                Logger.w("QQUpdateSession", "skip: aio_param is null");
+                return;
+            }
 
-            Object AIOSession = XField.obj(cAIOParam).type(Initiator.loadClass("com.tencent.aio.data.AIOSession")).get();
-            Object AIOContact = XField.obj(AIOSession).type(Initiator.loadClass("com.tencent.aio.data.AIOContact")).get();
-
-            String cPeerUID = getCurrentPeerIDByAIOContact(AIOContact);
-            int cChatType = getCurrentChatTypeByAIOContact(AIOContact);
+            ContactCompat contact = AIOParam2Contact(cAIOParam);
+            if (contact == null || contact.getPeerUid() == null || contact.getPeerUid().isEmpty()) {
+                Logger.w("QQUpdateSession", "skip: contact is unavailable");
+                return;
+            }
+            String cPeerUID = contact.getPeerUid();
+            int cChatType = contact.getChatType();
 
             new Thread(() -> {
                 int seq0 = ONOConf.getInt("ChatScrollMemory", cPeerUID, -1);

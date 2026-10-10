@@ -61,16 +61,21 @@ class QSignHook : BaseSwitchFunctionHookItem() {
         val signClass = loadClass("com.tencent.mobileqq.sign.QQSecuritySign")
         val qsecClass = loadClass("com.tencent.mobileqq.qsec.qsecurity.QSec")
 
-        val m = XposedHelpers.findMethodExact(
-            signClass,
-            "getSign",
-            qsecClass,
-            String::class.java,
-            String::class.java,
-            ByteArray::class.java,
-            ByteArray::class.java,
-            Long::class.javaPrimitiveType,
-        )
+        val m = runCatching {
+            XposedHelpers.findMethodExact(
+                signClass,
+                "getSign",
+                qsecClass,
+                String::class.java,
+                String::class.java,
+                ByteArray::class.java,
+                ByteArray::class.java,
+                Long::class.javaPrimitiveType,
+            )
+        }.getOrElse {
+            Logger.w("QSignHook", "skip: getSign signature changed")
+            return
+        }
         hookAfter(m) { param ->
             val result = param.result ?: return@hookAfter
             val extra  = XposedHelpers.getObjectField(result, "extra")  as ByteArray

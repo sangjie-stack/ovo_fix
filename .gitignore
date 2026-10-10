@@ -1959,3 +1959,8 @@ Thumbs.db
 /status
 /summary
 /trace_module
+
+# JVM crash dumps
+20260624001309752/
+20260408213233056/
+crash_hit_flag

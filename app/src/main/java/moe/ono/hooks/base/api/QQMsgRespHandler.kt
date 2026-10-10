@@ -54,9 +54,23 @@ class QQMsgRespHandler : ApiHookItem() {
     private fun update() {
         var pbSendCount = ONOConf.getInt("QQMsgRespHandler", "pbSendCount", 1000000)
         hookBefore(XMethod.clz("mqq.app.msghandle.MsgRespHandler").name("dispatchRespMsg").ignoreParam().get()) { param ->
-            val serviceMsg: ToServiceMsg = XField.obj(param.args[1]).name("toServiceMsg").get()
-            val fromServiceMsg: FromServiceMsg =
-                XField.obj(param.args[1]).name("fromServiceMsg").get()
+            if (param.args == null || param.args.size <= 1 || param.args[1] == null) {
+                Logger.w("QQMsgRespHandler", "skip: invalid dispatchRespMsg args")
+                return@hookBefore
+            }
+            val holder = XField.obj(param.args[1])
+            val serviceMsg: ToServiceMsg = runCatching {
+                holder.name("toServiceMsg").get<ToServiceMsg>()
+            }.getOrElse {
+                Logger.w("QQMsgRespHandler", "skip: toServiceMsg unavailable")
+                return@hookBefore
+            }
+            val fromServiceMsg: FromServiceMsg = runCatching {
+                holder.name("fromServiceMsg").get<FromServiceMsg>()
+            }.getOrElse {
+                Logger.w("QQMsgRespHandler", "skip: fromServiceMsg unavailable")
+                return@hookBefore
+            }
 
             var obj: JSONObject
             try {

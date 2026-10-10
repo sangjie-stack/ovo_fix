@@ -25,7 +25,10 @@ class QQMsgViewAdapter : ApiHookItem() {
         private var contentViewId = 0
 
         @JvmStatic
-        fun getContentView(msgItemView: View): View {
+        fun getContentView(msgItemView: View): View? {
+            if (contentViewId <= 0) {
+                return null
+            }
             return msgItemView.findViewById(contentViewId)
         }
 

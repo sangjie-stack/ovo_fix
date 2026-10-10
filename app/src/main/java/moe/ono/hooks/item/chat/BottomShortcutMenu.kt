@@ -66,7 +66,8 @@ class BottomShortcutMenu : BaseClickableFunctionHookItem() {
                 ).ignoreParam().get()
 
                 hookAfter(method) { param: MethodHookParam ->
-                    if (Session.getContact().chatType != ChatTypeConstants.C2C && Session.getContact().chatType != ChatTypeConstants.GROUP) {
+                    val contact = Session.getContact() ?: return@hookAfter
+                    if (contact.chatType != ChatTypeConstants.C2C && contact.chatType != ChatTypeConstants.GROUP) {
                         return@hookAfter
                     }
 
@@ -85,7 +86,8 @@ class BottomShortcutMenu : BaseClickableFunctionHookItem() {
                 val method = TargetManager.requireMethod(Constants.MethodCacheKey_ChatPanelBtn)
                 hookAfter(method) { param: MethodHookParam? ->
                     val layout = param!!.thisObject as LinearLayout
-                    if (Session.getContact().chatType != ChatTypeConstants.C2C && Session.getContact().chatType != ChatTypeConstants.GROUP) return@hookAfter
+                    val contact = Session.getContact() ?: return@hookAfter
+                    if (contact.chatType != ChatTypeConstants.C2C && contact.chatType != ChatTypeConstants.GROUP) return@hookAfter
                     if (!this.isEnabled) return@hookAfter
                     for (i in 0..<layout.childCount) {
                         val child = layout.getChildAt(i)
